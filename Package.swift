@@ -34,22 +34,22 @@ let package = Package(
         .target(
             name: "Logger Handlers Foundation Integration",
             dependencies: [
-                "Logger Handlers",
+                .target(name: "Logger Handlers"),
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .testTarget(
             name: "Logger Handlers Tests",
             dependencies: [
-                "Logger Handlers",
+                .target(name: "Logger Handlers"),
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .testTarget(
             name: "Logger Handlers Foundation Integration Tests",
             dependencies: [
-                "Logger Handlers",
-                "Logger Handlers Foundation Integration",
+                .target(name: "Logger Handlers"),
+                .target(name: "Logger Handlers Foundation Integration"),
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),
@@ -58,17 +58,14 @@ let package = Package(
 )
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
-    let ecosystem: [SwiftSetting] = [
+    target.swiftSettings = (target.swiftSettings ?? []) + [
         .strictMemorySafety(),
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
-        .enableExperimentalFeature("Lifetimes"),
         .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableExperimentalFeature("Lifetimes"),
+        .treatAllWarnings(as: .error),
     ]
-
-    let package: [SwiftSetting] = []
-
-    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem + package
 }
